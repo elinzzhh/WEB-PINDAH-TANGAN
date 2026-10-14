@@ -9,7 +9,7 @@ if(isset($_POST['register'])) {
 
     $cek = mysqli_query($conn, "SELECT * FROM users WHERE nrp = '$nrp'");
     if(mysqli_num_rows($cek) > 0) {
-        $error = "NRP/NIM sudah terdaftar!";
+        $error = "NRP sudah terdaftar!";
     } else {
         $insert = mysqli_query($conn, "INSERT INTO users (nama, nrp, password) VALUES ('$nama', '$nrp', '$password')");
         if($insert) {
