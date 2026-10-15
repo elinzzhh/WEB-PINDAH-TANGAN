@@ -1,0 +1,8 @@
+{
+    "name": "kelompok/pindah-tangan",
+    "description": "Aplikasi Thrift, Barter, dan Hibah Lingkup Kampus",
+    "type": "project",
+    "require": {
+        "php": ">=7.4"
+    }
+}
