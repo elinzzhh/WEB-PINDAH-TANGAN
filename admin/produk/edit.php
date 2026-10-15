@@ -1,156 +1,90 @@
 <?php
 session_start();
-// Naik 2 tingkat ke root lalu masuk ke config/koneksi.php
 include '../../config/koneksi.php';
 
-// Pastikan parameter ID ada di URL
-if (!isset($_GET['id'])) {
-    header("Location: index.php");
-    exit;
-}
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$query_produk = mysqli_query($conn, "SELECT * FROM products WHERE id = $id");
+$data = mysqli_fetch_assoc($query_produk);
 
-$id = (int)$_GET['id'];
-
-// Ambil data produk berdasarkan ID dari database
-$query = mysqli_query($conn, "SELECT * FROM produk WHERE id = $id");
-$produk = mysqli_fetch_assoc($query);
-
-// Jika produk tidak ditemukan
-if (!$produk) {
-    echo "<script>alert('Produk tidak ditemukan!'); window.location='index.php';</script>";
-    exit;
-}
-
-// Ambil data kategori untuk pilihan dropdown
-$query_kategori = mysqli_query($conn, "SELECT * FROM kategori");
-
-// Proses jika tombol Simpan Perubahan ditekan
-if (isset($_POST['update'])) {
-    $nama_produk = mysqli_real_escape_string($conn, $_POST['nama_produk']);
-    $kategori_id = mysqli_real_escape_string($conn, $_POST['kategori_id']);
-    $harga       = mysqli_real_escape_string($conn, $_POST['harga']);
-    $stok        = mysqli_real_escape_string($conn, $_POST['stok']);
-    $deskripsi   = mysqli_real_escape_string($conn, $_POST['deskripsi']);
+if(isset($_POST['update'])) {
+    $nama = $_POST['nama_produk'];
+    $kategori = $_POST['kategori_id'];
+    $harga = $_POST['harga'];
+    $ukuran = $_POST['ukuran'];
+    $kondisi = $_POST['kondisi'];
     
-    $gambar_lama = $produk['gambar'];
-    $nama_gambar = $gambar_lama;
-
-    // Cek apakah ada file gambar baru yang di-upload
-    if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] === 0) {
-        $file_tmp   = $_FILES['gambar']['tmp_name'];
-        $file_name  = $_FILES['gambar']['name'];
-        $ekstensi   = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-        $ekstensi_valid = ['jpg', 'jpeg', 'png', 'webp'];
-
-        if (in_array($ekstensi, $ekstensi_valid)) {
-            $nama_gambar = time() . '_' . $file_name;
-            $folder_tujuan = '../../assets/img/';
-
-            // Pindahkan file gambar baru ke folder assets/img/
-            if (move_uploaded_file($file_tmp, $folder_tujuan . $nama_gambar)) {
-                // Hapus gambar lama dari folder jika ada
-                if (!empty($gambar_lama) && file_exists($folder_tujuan . $gambar_lama)) {
-                    unlink($folder_tujuan . $gambar_lama);
-                }
-            }
-        }
-    }
-
-    // Update data ke tabel 'produk' di database
-    $update = mysqli_query($conn, "UPDATE produk SET 
-                nama_produk = '$nama_produk', 
-                kategori_id = '$kategori_id', 
-                harga = '$harga', 
-                stok = '$stok', 
-                deskripsi = '$deskripsi', 
-                gambar = '$nama_gambar' 
-              WHERE id = $id");
-
-    if ($update) {
-        echo "<script>alert('Produk berhasil diperbarui!'); window.location='index.php';</script>";
+    // Cek apakah ada gambar baru yang diupload
+    if($_FILES['gambar']['name'] != '') {
+        $gambar = $_FILES['gambar']['name'];
+        $tmp = $_FILES['gambar']['tmp_name'];
+        $path = "../../uploads/produk/" . $gambar;
+        move_uploaded_file($tmp, $path);
+        
+        $query = "UPDATE products SET kategori_id='$kategori', nama_produk='$nama', harga='$harga', ukuran='$ukuran', kondisi='$kondisi', gambar='$gambar' WHERE id=$id";
     } else {
-        echo "<script>alert('Gagal memperbarui produk!');</script>";
+        $query = "UPDATE products SET kategori_id='$kategori', nama_produk='$nama', harga='$harga', ukuran='$ukuran', kondisi='$kondisi' WHERE id=$id";
     }
+    
+    mysqli_query($conn, $query);
+    echo "<script>alert('Produk berhasil diupdate!'); window.location='index.php';</script>";
 }
+
+$query_kat = mysqli_query($conn, "SELECT * FROM categories");
 ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Produk - Admin Pindah Tangan</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Edit Produk - Admin</title>
+    <style>
+        body { font-family: sans-serif; background: #f5efe6; padding: 40px; }
+        .form-container { background: white; padding: 30px; border-radius: 8px; max-width: 600px; margin: auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .btn-submit { background-color: #f39c12; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
 </head>
-<body class="bg-light">
-
-    <div class="container mt-5 mb-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">Edit Data Produk</h4>
-                    </div>
-                    <div class="card-body">
-                        <form action="" method="POST" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label for="nama_produk" class="form-label">Nama Produk</label>
-                                <input type="text" class="form-control" id="nama_produk" name="nama_produk" value="<?= htmlspecialchars($produk['nama_produk']); ?>" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="kategori_id" class="form-label">Kategori</label>
-                                <select class="form-select" id="kategori_id" name="kategori_id" required>
-                                    <option value="">-- Pilih Kategori --</option>
-                                    <?php while($kat = mysqli_fetch_assoc($query_kategori)): ?>
-                                        <option value="<?= $kat['id']; ?>" <?= ($produk['kategori_id'] == $kat['id']) ? 'selected' : ''; ?>>
-                                            <?= htmlspecialchars($kat['nama_kategori'] ?? $kat['nama']); ?>
-                                        </option>
-                                    <?php endwhile; ?>
-                                </select>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="harga" class="form-label">Harga (Rp)</label>
-                                    <input type="number" class="form-control" id="harga" name="harga" value="<?= $produk['harga']; ?>" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="stok" class="form-label">Stok</label>
-                                    <input type="number" class="form-control" id="stok" name="stok" value="<?= $produk['stok']; ?>" required>
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="deskripsi" class="form-label">Deskripsi</label>
-                                <textarea class="form-control" id="deskripsi" name="deskripsi" rows="4" required><?= htmlspecialchars($produk['deskripsi']); ?></textarea>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="gambar" class="form-label">Gambar Produk</label>
-                                <div class="mb-2">
-                                    <?php if(!empty($produk['gambar'])): ?>
-                                        <img src="../../assets/img/<?= $produk['gambar']; ?>" alt="Preview" width="120" class="img-thumbnail">
-                                    <?php else: ?>
-                                        <span class="text-muted">Tidak ada gambar saat ini</span>
-                                    <?php endif; ?>
-                                </div>
-                                <input type="file" class="form-control" id="gambar" name="gambar">
-                                <small class="text-muted">Biarkan kosong jika tidak ingin mengubah gambar produk.</small>
-                            </div>
-
-                            <div class="d-flex justify-content-between">
-                                <a href="index.php" class="btn btn-secondary">Kembali</a>
-                                <button type="submit" name="update" class="btn btn-primary">Simpan Perubahan</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+<body>
+    <div class="form-container">
+        <h2 style="margin-bottom: 20px;">Edit Produk</h2>
+        <form action="" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Nama Produk</label>
+                <input type="text" name="nama_produk" value="<?= $data['nama_produk'] ?>" required>
             </div>
-        </div>
+            <div class="form-group">
+                <label>Kategori</label>
+                <select name="kategori_id" required>
+                    <?php while($k = mysqli_fetch_assoc($query_kat)): ?>
+                        <option value="<?= $k['id'] ?>" <?= ($data['kategori_id'] == $k['id']) ? 'selected' : '' ?>><?= $k['nama_kategori'] ?></option>
+                    <?php endwhile; ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Harga</label>
+                <input type="number" name="harga" value="<?= $data['harga'] ?>" required>
+            </div>
+            <div class="form-group">
+                <label>Ukuran</label>
+                <input type="text" name="ukuran" value="<?= $data['ukuran'] ?>">
+            </div>
+            <div class="form-group">
+                <label>Kondisi</label>
+                <select name="kondisi" required>
+                    <option value="Bekas (Layak Pakai)" <?= ($data['kondisi'] == 'Bekas (Layak Pakai)') ? 'selected' : '' ?>>Bekas (Layak Pakai)</option>
+                    <option value="Baru" <?= ($data['kondisi'] == 'Baru') ? 'selected' : '' ?>>Baru</option>
+                    <option value="Barter" <?= ($data['kondisi'] == 'Barter') ? 'selected' : '' ?>>Barter</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Gambar Produk (Biarkan kosong jika tidak diganti)</label>
+                <img src="../../assets/img/produk/<?= $data['gambar'] ?>" width="100" style="margin-bottom: 10px; display:block;">
+                <input type="file" name="gambar" accept="image/*">
+            </div>
+            <button type="submit" name="update" class="btn-submit">Update Produk</button>
+            <a href="index.php" style="margin-left: 10px; color: #666; text-decoration: none;">Batal</a>
+        </form>
     </div>
-
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
