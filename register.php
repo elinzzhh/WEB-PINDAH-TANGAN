@@ -41,7 +41,7 @@ if(isset($_POST['register'])) {
                     <input type="text" name="nama" placeholder="Nama Lengkap" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="nrp" placeholder="NIM (Nomor Induk Mahasiswa)" required>
+                    <input type="text" name="nrp" placeholder="Masukkan NRP" required>
                 </div>
                 <div class="form-group">
                     <input type="email" name="email" placeholder="Email Kampus (@student.pens.ac.id)" required>
