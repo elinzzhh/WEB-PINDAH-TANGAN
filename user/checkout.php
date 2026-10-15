@@ -22,7 +22,7 @@ if(isset($_POST['buat_pesanan'])) {
     $pesan .= "- Total: Rp " . number_format($total_harga, 0, ',', '.') . "%0A%0A";
     $pesan .= "Mohon segera diproses, terima kasih.";
 
-    $link_wa = "https://api.whatsapp.com/send?phone=$nomor_wa_admin&text=$pesan";
+    $link_wa = "https://api.whatsapp.com/qr/BGMT2DRQMP3FP1?autoload=1&app_absent=0";
     
 
     echo "<script>window.location.href = '$link_wa';</script>";
