@@ -1,0 +1,205 @@
+:root {
+    --bg-color: #f5efe6;
+    --primary-color: #1a3626;
+    --secondary-color: #e8ded1;
+    --text-color: #333333;
+    --white: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+}
+
+/* Container untuk simulasi tampilan Mobile (seperti UI di PPT) */
+.app-container {
+    width: 100%;
+    max-width: 414px;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    position: relative;
+    overflow-x: hidden;
+    padding-bottom: 70px;
+}
+
+/* Halaman Auth (Login / Register) */
+.auth-container {
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.auth-logo {
+    width: 60px;
+    margin-bottom: 10px;
+}
+
+.auth-container h2 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.auth-container p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: var(--white);
+    font-size: 14px;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-google {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--white);
+    color: var(--text-color);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Dashboard Header & Banner */
+.header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-bar {
+    margin: 0 20px;
+    padding: 10px 15px;
+    background-color: var(--white);
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    width: 100%;
+    margin-left: 10px;
+}
+
+.banner {
+    margin: 20px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 20px;
+    border-radius: 12px;
+}
+
+/* Kategori & Produk */
+.kategori-row {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 20px;
+}
+
+.kategori-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+}
+
+.kategori-icon {
+    width: 50px;
+    height: 50px;
+    background-color: var(--secondary-color);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.produk-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    padding: 20px;
+}
+
+.produk-card {
+    background-color: var(--white);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.produk-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.label-status {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+.label-jual { background-color: #d1ffd6; color: #1a5e20; }
+.label-barter { background-color: #fff4cc; color: #8a6d00; }
+.label-hibah { background-color: #cce5ff; color: #004085; }
+
+/* Bottom Nav */
+.bottom-nav {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: var(--white);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    border-top: 1px solid #ddd;
+}
+.nav-item {
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 12px;
+}
